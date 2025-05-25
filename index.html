@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>좀비 생존 심리테스트</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 30px;
+      background-color: #111;
+      color: #eee;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    .question {
+      font-size: 1.3em;
+      margin: 30px 0 15px;
+    }
+    .choices button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background: #222;
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .choices button:hover {
+      background: #00ffcc;
+      color: #111;
+    }
+    #result {
+      margin-top: 40px;
+      font-size: 1.5em;
+      color: #ffcc00;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧟 당신은 좀비 세상에서 살아남을 수 있을까?</h1>
+  <div id="game">
+    <div class="question" id="question"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+  <div id="result"></div>
+
+  <script>
+    const story = {
+      start: {
+        text: "TV에 긴급 속보가 떴다. 좀비 사태 발생! 당신은...?",
+        choices: [
+          { text: "휴대폰부터 확인한다", next: "call_friend" },
+          { text: "냉장고부터 연다", next: "chicken" }
+        ]
+      },
+      call_friend: {
+        text: "친구에게 전화했다. '우리 집 지하벙커로 와!'",
+        choices: [
+          { text: "간다", next: "trap" },
+          { text: "믿지 못해 다른 방법을 찾는다", next: "hide" }
+        ]
+      },
+      chicken: {
+        text: "식은 치킨이 있다. 먹을까?",
+        choices: [
+          { text: "먹는다", next: "zombie_smell" },
+          { text: "냉장고 문을 방패로 쓴다", next: "weaponize" }
+        ]
+      },
+      trap: {
+        text: "벙커는 함정이었다. 좀비 무리가 몰려온다!",
+        choices: [
+          { text: "뛰쳐나간다", next: "death_3days" },
+          { text: "숨어버린다", next: "philosopher" }
+        ]
+      },
+      hide: {
+        text: "근처 편의점에 숨었다. 누군가 문을 두드린다...",
+        choices: [
+          { text: "문을 연다", next: "infected" },
+          { text: "절대 열지 않는다", next: "research_lab" }
+        ]
+      },
+      zombie_smell: {
+        text: "치킨 냄새로 좀비가 달려온다!",
+        choices: [
+          { text: "날개뼈로 맞선다", next: "king" },
+          { text: "숨어버린다", next: "death_3days" }
+        ]
+      },
+      weaponize: {
+        text: "냉장고 문과 조리도구로 무장했다.",
+        choices: [
+          { text: "옥상으로 올라간다", next: "philosopher" },
+          { text: "지하로 간다", next: "research_lab" }
+        ]
+      },
+      philosopher: {
+        text: "[엔딩] 당신은 '모든 것은 운명이다'라며 좀비가 되는 걸 선택했다. (철학자형 감염자)",
+        choices: []
+      },
+      research_lab: {
+        text: "낡은 연구소. 누군가 나타나 '치료제를 만들자'고 한다",
+        choices: [
+          { text: "따른다", next: "savior" },
+          { text: "믿을 수 없어 쓰러뜨린다", next: "king" },
+          { text: "필요 없다며 떠난다", next: "philosopher" }
+        ]
+      },
+      infected: {
+        text: "[엔딩] 문을 연 순간, 좀비가 당신을 물었다. (3초 만에 감염형)",
+        choices: []
+      },
+      king: {
+        text: "[엔딩] 당신은 무기와 전략으로 좀비를 제압하고 왕이 되었다! (좀비왕형 생존자)",
+        choices: []
+      },
+      death_3days: {
+        text: "[엔딩] 당신은 어설픈 선택 끝에 3일 만에 굶어 죽었다... (고립형 실패)",
+        choices: []
+      },
+      savior: {
+        text: "[엔딩] 당신은 치료제를 완성해 인류를 구했다. (구세주형 영웅)",
+        choices: []
+      }
+    };
+
+    let current = 'start';
+    const questionEl = document.getElementById('question');
+    const choicesEl = document.getElementById('choices');
+    const resultEl = document.getElementById('result');
+
+    function showNode(key) {
+      const node = story[key];
+      current = key;
+      questionEl.textContent = node.text;
+      choicesEl.innerHTML = '';
+      resultEl.textContent = '';
+      if (!node.choices || node.choices.length === 0) {
+        resultEl.textContent = node.text;
+        return;
+      }
+      node.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.textContent = choice.text;
+        btn.onclick = () => showNode(choice.next);
+        choicesEl.appendChild(btn);
+      });
+    }
+
+    showNode(current);
+  </script>
+</body>
+</html>
